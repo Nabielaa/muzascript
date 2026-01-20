@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Script Website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #0f0f0f;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 15px;
+      text-align: center;
+      background: #151515;
+      border-bottom: 1px solid #222;
+    }
+
+    header h1 {
+      font-size: 20px;
+      color: #00ffaa;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .typing {
+      font-size: 22px;
+      margin-bottom: 30px;
+      min-height: 30px;
+    }
+
+    .buttons {
+      display: none;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    button, .link-btn {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #00ffaa;
+      color: #000;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+    }
+
+    button:hover, .link-btn:hover {
+      background: #00cc88;
+    }
+
+    .section {
+      display: none;
+      animation: fade 0.3s ease-in-out;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 12px;
+      background: #151515;
+      border-top: 1px solid #222;
+      font-size: 13px;
+      color: #aaa;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <h1>My Script Website</h1>
+  </header>
+
+  <!-- MAIN -->
+  <main>
+    <div class="container">
+
+      <!-- TYPING TEXT -->
+      <div class="typing" id="typing"></div>
+
+      <!-- MAIN BUTTONS -->
+      <div class="buttons" id="mainButtons">
+        <button onclick="showInfo()">Information</button>
+        <button onclick="showSocial()">Social Media</button>
+      </div>
+
+      <!-- INFORMATION -->
+      <div class="section" id="infoSection">
+        <p style="margin-bottom: 20px;">
+          Hello! 👋<br><br>
+          I am a script developer who focuses on creating and showcasing scripts.
+          This website is made to share information and my social media.
+        </p>
+        <button onclick="goBack()">Back</button>
+      </div>
+
+      <!-- SOCIAL MEDIA -->
+      <div class="section" id="socialSection">
+        <a class="link-btn" href="https://discord.gg/yourdiscord" target="_blank">Discord</a>
+        <a class="link-btn" href="https://youtube.com/@youryoutube" target="_blank">YouTube</a>
+        <a class="link-btn" href="https://tiktok.com/@yourtiktok" target="_blank">TikTok</a>
+        <button onclick="goBack()" style="margin-top: 15px;">Back</button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2026 - My Script Website
+  </footer>
+
+  <script>
+    const text = "Hello! welcome to my website!";
+    let index = 0;
+    const typingElement = document.getElementById("typing");
+    const mainButtons = document.getElementById("mainButtons");
+
+    function typeText() {
+      if (index < text.length) {
+        typingElement.innerHTML += text.charAt(index);
+        index++;
+        setTimeout(typeText, 80);
+      } else {
+        mainButtons.style.display = "flex";
+      }
+    }
+
+    function showInfo() {
+      mainButtons.style.display = "none";
+      document.getElementById("infoSection").style.display = "block";
+    }
+
+    function showSocial() {
+      mainButtons.style.display = "none";
+      document.getElementById("socialSection").style.display = "flex";
+      document.getElementById("socialSection").style.flexDirection = "column";
+      document.getElementById("socialSection").style.gap = "15px";
+    }
+
+    function goBack() {
+      document.getElementById("infoSection").style.display = "none";
+      document.getElementById("socialSection").style.display = "none";
+      mainButtons.style.display = "flex";
+    }
+
+    // start typing
+    typeText();
+  </script>
+
+</body>
+</html>
