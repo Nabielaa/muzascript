@@ -156,82 +156,31 @@
 </footer>
 
 <script>
-  const typingEl = document.getElementById("typing");
-  const nameBox = document.getElementById("nameBox");
-  const mainButtons = document.getElementById("mainButtons");
-  const countryEl = document.getElementById("visitorCountry");
-
-  let index = 0;
-  let text = "";
-
-  function typeText(cb) {
-    if (index < text.length) {
-      typingEl.innerHTML += text.charAt(index++);
-      setTimeout(() => typeText(cb), 70);
-    } else if (cb) cb();
+function submitName() {
+  const name = document.getElementById("username").value;
+  if (!name) {
+    alert("isi nama dulu");
+    return;
   }
 
-  function startIntro() {
-    const saved = localStorage.getItem("muzascript_username");
-    typingEl.innerHTML = "";
-    index = 0;
-
-    if (saved) {
-      text = "Welcome back, " + saved + "!";
-      typeText(() => mainButtons.style.display = "flex");
-    } else {
-      text = "Hello! I'm muzascript, what is your name?";
-      typeText(() => nameBox.style.display = "flex");
-    }
-  }
-
-  function submitName() {
-    const name = document.getElementById("username").value.trim();
-    if (name.length < 2) return;
-
-    const country = countryEl
-      ? countryEl.innerText.replace("🌍 Country: ", "")
-      : "Unknown";
-
-    localStorage.setItem("muzascript_username", name);
-    nameBox.style.display = "none";
-
-    fetch("https://script.google.com/macros/s/AKfycbyqn1gWKRPVb21RUJGwRWRU1IToMFrfggASgSKRGNCpRWs0PtV3GJhTYYp3e5uD7luC/exec", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, country })
-    });
-
-    typingEl.innerHTML = "";
-    index = 0;
-    text = "Nice to meet you, " + name + "!";
-    typeText(() => mainButtons.style.display = "flex");
-  }
-
-  function showInfo() {
-    mainButtons.style.display = "none";
-    infoSection.style.display = "block";
-  }
-
-  function showSocial() {
-    mainButtons.style.display = "none";
-    socialSection.style.display = "flex";
-    socialSection.style.flexDirection = "column";
-    socialSection.style.gap = "15px";
-  }
-
-  function goBack() {
-    infoSection.style.display = "none";
-    socialSection.style.display = "none";
-    mainButtons.style.display = "flex";
-  }
-
-  fetch("https://ipapi.co/json/")
-    .then(r => r.json())
-    .then(d => countryEl.innerText = "🌍 Country: " + d.country_name)
-    .catch(() => countryEl.innerText = "🌍 Country: Unknown");
-
-  startIntro();
+  fetch("https://script.google.com/macros/s/AKfycbzYFaOk3VM93iVlE3D9GRSlvwHMtyLJnf8ZSwF7V15YG764X4c2VU1zllwrPbICBi_R/exec", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: name,
+      country: "TEST_COUNTRY"
+    })
+  })
+  .then(r => r.text())
+  .then(t => {
+    alert("RESP: " + t);
+  })
+  .catch(e => {
+    alert("ERROR: " + e);
+  });
+}
 </script>
 
 </body>
