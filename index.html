@@ -196,7 +196,7 @@
     localStorage.setItem("muzascript_username", name);
     nameBox.style.display = "none";
 
-    fetch("https://script.google.com/macros/s/AKfycbzYFaOk3VM93iVlE3D9GRSlvwHMtyLJnf8ZSwF7V15YG764X4c2VU1zllwrPbICBi_R/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbyqn1gWKRPVb21RUJGwRWRU1IToMFrfggASgSKRGNCpRWs0PtV3GJhTYYp3e5uD7luC/exec", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, country })
