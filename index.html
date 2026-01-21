@@ -174,30 +174,63 @@
   const typingEl = document.getElementById("typing");
   const nameBox = document.getElementById("nameBox");
   const mainButtons = document.getElementById("mainButtons");
+  const countryEl = document.getElementById("visitorCountry");
 
-  let text = "Hello welcome to muzascript website! I'm muzascript, what is your name?";
   let index = 0;
+  let text = "";
 
   function typeText(callback) {
     if (index < text.length) {
       typingEl.innerHTML += text.charAt(index);
       index++;
       setTimeout(() => typeText(callback), 70);
-    } else if (callback) {
-      callback();
+    } else if (callback) callback();
+  }
+
+  function startIntro() {
+    const savedName = localStorage.getItem("muzascript_username");
+    typingEl.innerHTML = "";
+    index = 0;
+
+    if (savedName) {
+      text = "Welcome back, " + savedName + "!";
+      typeText(() => {
+        mainButtons.style.display = "flex";
+      });
+    } else {
+      text = "Hello welcome to muzascript website! I'm muzascript, what is your name?";
+      typeText(() => {
+        nameBox.style.display = "flex";
+      });
     }
   }
 
   function submitName() {
     const name = document.getElementById("username").value.trim();
-    if (!name) return;
+    if (name.length < 2) return;
+
+    const country = countryEl
+      ? countryEl.innerText.replace("🌍 Country: ", "")
+      : "Unknown";
 
     localStorage.setItem("muzascript_username", name);
+    nameBox.style.display = "none";
+
+    // 🔥 KIRIM KE GOOGLE SHEET
+    fetch("https://script.google.com/macros/s/AKfycbzYFaOk3VM93iVlE3D9GRSlvwHMtyLJnf8ZSwF7V15YG764X4c2VU1zllwrPbICBi_R/exec", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: name,
+        country: country
+      })
+    });
 
     typingEl.innerHTML = "";
     index = 0;
     text = "Nice to meet you, " + name + "!";
-    nameBox.style.display = "none";
 
     typeText(() => {
       mainButtons.style.display = "flex";
@@ -223,29 +256,21 @@
     mainButtons.style.display = "flex";
   }
 
-  /* VISITOR COUNT */
-  let views = localStorage.getItem("muzascript_views");
-  views = views ? parseInt(views) + 1 : 1;
-  localStorage.setItem("muzascript_views", views);
-  document.getElementById("visitorCount").innerText =
-    "👀 Visitors: " + views;
-
-  /* VISITOR COUNTRY */
+  // 🌍 DETEKSI NEGARA
   fetch("https://ipapi.co/json/")
     .then(res => res.json())
     .then(data => {
-      document.getElementById("visitorCountry").innerText =
-        "🌍 Country: " + data.country_name;
+      if (countryEl) {
+        countryEl.innerText = "🌍 Country: " + data.country_name;
+      }
     })
     .catch(() => {
-      document.getElementById("visitorCountry").innerText =
-        "🌍 Country: Unknown";
+      if (countryEl) {
+        countryEl.innerText = "🌍 Country: Unknown";
+      }
     });
 
-  /* START */
-  typeText(() => {
-    nameBox.style.display = "flex";
-  });
+  startIntro();
 </script>
 
 </body>
