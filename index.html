@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>muzascript information</title>
+  <title>muzascript website</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -49,8 +49,23 @@
 
     .typing {
       font-size: 22px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       min-height: 30px;
+    }
+
+    .input-box {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      font-size: 15px;
     }
 
     .buttons {
@@ -85,104 +100,153 @@
       to { opacity: 1; }
     }
 
+    .text-muted {
+      color: rgba(200, 200, 200, 0.6);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
     footer {
       text-align: center;
       padding: 12px;
       background: #151515;
       border-top: 1px solid #222;
       font-size: 13px;
-      color: #aaa;
+      color: rgba(255,255,255,0.4);
     }
-
-.text-muted {
-  color: rgba(200, 200, 200, 0.6);
-}
-    
   </style>
 </head>
 
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <h1>muzascript website</h1>
-  </header>
+<header>
+  <h1>muzascript website</h1>
+</header>
 
-  <!-- MAIN -->
-  <main>
-    <div class="container">
+<main>
+  <div class="container">
 
-      <!-- TYPING TEXT -->
-      <div class="typing" id="typing"></div>
+    <div class="typing" id="typing"></div>
 
-      <!-- MAIN BUTTONS -->
-      <div class="buttons" id="mainButtons">
-        <button onclick="showInfo()">Information</button>
-        <button onclick="showSocial()">Social Media</button>
-      </div>
-
-      <!-- INFORMATION -->
-      <div class="section" id="infoSection">
-        <p class="text-muted">muzascript</p>
-          I am a script developer who focuses on creating and showcasing scripts.
-          This website is made to share information and my social media.
-        </p>
-        <button onclick="goBack()">Back</button>
-      </div>
-
-      <!-- SOCIAL MEDIA -->
-      <div class="section" id="socialSection">
-        <a class="link-btn" href="https://discord.gg/R6fSpCX7W" target="_blank">Discord</a>
-        <a class="link-btn" href="https://youtube.com/@muzascriptroblox" target="_blank">YouTube</a>
-        <a class="link-btn" href="https://tiktok.com/@bluearmy_82" target="_blank">TikTok</a>
-        <button onclick="goBack()" style="margin-top: 15px;">Back</button>
-      </div>
-
+    <!-- INPUT NAME -->
+    <div class="input-box" id="nameBox">
+      <input type="text" id="username" placeholder="Enter your name">
+      <button onclick="submitName()">Submit</button>
     </div>
-  </main>
 
-  <!-- FOOTER -->
-  <footer>
-    ©2026 muzascript • Roblox Scripter / Script Showcaser 
-  </footer>
+    <!-- MAIN BUTTONS -->
+    <div class="buttons" id="mainButtons">
+      <button onclick="showInfo()">Information</button>
+      <button onclick="showSocial()">Social Media</button>
+    </div>
 
-  <script>
-    const text = "Hello! welcome to my website!";
-    let index = 0;
-    const typingElement = document.getElementById("typing");
-    const mainButtons = document.getElementById("mainButtons");
+    <!-- INFO -->
+    <div class="section" id="infoSection">
+      <p class="text-muted">muzascript</p>
 
-    function typeText() {
-      if (index < text.length) {
-        typingElement.innerHTML += text.charAt(index);
-        index++;
-        setTimeout(typeText, 80);
-      } else {
-        mainButtons.style.display = "flex";
-      }
+      <p style="margin-bottom:15px;">
+        I am a script developer who focuses on creating and showcasing scripts.
+        This website is made to share information and my social media.
+      </p>
+
+      <p class="text-muted" id="visitorCount">👀 Visitors: 0</p>
+      <p class="text-muted" id="visitorCountry">🌍 Country: Detecting...</p>
+
+      <button onclick="goBack()">Back</button>
+    </div>
+
+    <!-- SOCIAL -->
+    <div class="section" id="socialSection">
+      <a class="link-btn" href="https://discord.gg/R6fSpCX7W" target="_blank">Discord</a>
+      <a class="link-btn" href="https://youtube.com/@muzascriptroblox" target="_blank">YouTube</a>
+      <a class="link-btn" href="https://tiktok.com/@bluearmy_82" target="_blank">TikTok</a>
+      <button onclick="goBack()" style="margin-top:15px;">Back</button>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  ©2026 muzascript • Roblox Scripter / Script Showcaser
+</footer>
+
+<script>
+  const typingEl = document.getElementById("typing");
+  const nameBox = document.getElementById("nameBox");
+  const mainButtons = document.getElementById("mainButtons");
+
+  let text = "Hello! I'm muzascript, what is your name?";
+  let index = 0;
+
+  function typeText(callback) {
+    if (index < text.length) {
+      typingEl.innerHTML += text.charAt(index);
+      index++;
+      setTimeout(() => typeText(callback), 70);
+    } else if (callback) {
+      callback();
     }
+  }
 
-    function showInfo() {
-      mainButtons.style.display = "none";
-      document.getElementById("infoSection").style.display = "block";
-    }
+  function submitName() {
+    const name = document.getElementById("username").value.trim();
+    if (!name) return;
 
-    function showSocial() {
-      mainButtons.style.display = "none";
-      document.getElementById("socialSection").style.display = "flex";
-      document.getElementById("socialSection").style.flexDirection = "column";
-      document.getElementById("socialSection").style.gap = "15px";
-    }
+    localStorage.setItem("muzascript_username", name);
 
-    function goBack() {
-      document.getElementById("infoSection").style.display = "none";
-      document.getElementById("socialSection").style.display = "none";
+    typingEl.innerHTML = "";
+    index = 0;
+    text = "Nice to meet you, " + name + "!";
+    nameBox.style.display = "none";
+
+    typeText(() => {
       mainButtons.style.display = "flex";
-    }
+    });
+  }
 
-    // start typing
-    typeText();
-  </script>
+  function showInfo() {
+    mainButtons.style.display = "none";
+    document.getElementById("infoSection").style.display = "block";
+  }
+
+  function showSocial() {
+    mainButtons.style.display = "none";
+    const s = document.getElementById("socialSection");
+    s.style.display = "flex";
+    s.style.flexDirection = "column";
+    s.style.gap = "15px";
+  }
+
+  function goBack() {
+    document.getElementById("infoSection").style.display = "none";
+    document.getElementById("socialSection").style.display = "none";
+    mainButtons.style.display = "flex";
+  }
+
+  /* VISITOR COUNT */
+  let views = localStorage.getItem("muzascript_views");
+  views = views ? parseInt(views) + 1 : 1;
+  localStorage.setItem("muzascript_views", views);
+  document.getElementById("visitorCount").innerText =
+    "👀 Visitors: " + views;
+
+  /* VISITOR COUNTRY */
+  fetch("https://ipapi.co/json/")
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("visitorCountry").innerText =
+        "🌍 Country: " + data.country_name;
+    })
+    .catch(() => {
+      document.getElementById("visitorCountry").innerText =
+        "🌍 Country: Unknown";
+    });
+
+  /* START */
+  typeText(() => {
+    nameBox.style.display = "flex";
+  });
+</script>
 
 </body>
 </html>
