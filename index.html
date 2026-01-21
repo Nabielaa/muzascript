@@ -1,188 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>muzascript information</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>muzascript website</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    body {
-      background: #0f0f0f;
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      padding: 15px;
-      text-align: center;
-      background: #151515;
-      border-bottom: 1px solid #222;
-    }
-
-    header h1 {
-      font-size: 20px;
-      color: #00ffaa;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
-    }
-
-    .typing {
-      font-size: 22px;
-      margin-bottom: 30px;
-      min-height: 30px;
-    }
-
-    .buttons {
-      display: none;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    button, .link-btn {
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      background: #00ffaa;
-      color: #000;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-      text-decoration: none;
-    }
-
-    button:hover, .link-btn:hover {
-      background: #00cc88;
-    }
-
-    .section {
-      display: none;
-      animation: fade 0.3s ease-in-out;
-    }
-
-    @keyframes fade {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    footer {
-      text-align: center;
-      padding: 12px;
-      background: #151515;
-      border-top: 1px solid #222;
-      font-size: 13px;
-      color: #aaa;
-    }
-
-.text-muted {
-  color: rgba(200, 200, 200, 0.6);
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, Helvetica, sans-serif;
 }
-    
-  </style>
+
+body{
+  background:#0f0f0f;
+  color:#fff;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+header{
+  padding:15px;
+  text-align:center;
+  background:#151515;
+  border-bottom:1px solid #222;
+}
+
+header h1{
+  color:#00ffaa;
+  font-size:20px;
+}
+
+main{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.container{
+  width:100%;
+  max-width:500px;
+  text-align:center;
+}
+
+.typing{
+  font-size:22px;
+  min-height:30px;
+  margin-bottom:30px;
+}
+
+.buttons{
+  display:none;
+  flex-direction:column;
+  gap:15px;
+}
+
+.section{
+  display:none;
+  animation:fade .3s ease;
+}
+
+button,.link-btn{
+  padding:12px;
+  border-radius:8px;
+  border:none;
+  background:#00ffaa;
+  color:#000;
+  font-size:16px;
+  cursor:pointer;
+  text-decoration:none;
+}
+
+button:hover,.link-btn:hover{
+  background:#00cc88;
+}
+
+textarea{
+  width:100%;
+  min-height:100px;
+  padding:10px;
+  border-radius:6px;
+  border:none;
+  outline:none;
+  resize:none;
+}
+
+footer{
+  padding:12px;
+  text-align:center;
+  background:#151515;
+  border-top:1px solid #222;
+  font-size:13px;
+  color:#aaa;
+}
+
+@keyframes fade{
+  from{opacity:0}
+  to{opacity:1}
+}
+</style>
 </head>
 
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <h1>muzascript website</h1>
-  </header>
+<header>
+<h1>muzascript website</h1>
+</header>
 
-  <!-- MAIN -->
-  <main>
-    <div class="container">
+<main>
+<div class="container">
 
-      <!-- TYPING TEXT -->
-      <div class="typing" id="typing"></div>
+<div class="typing" id="typing"></div>
 
-      <!-- MAIN BUTTONS -->
-      <div class="buttons" id="mainButtons">
-        <button onclick="showInfo()">Information</button>
-        <button onclick="showSocial()">Social Media</button>
-      </div>
+<!-- HOME -->
+<div class="buttons" id="homeButtons">
+  <button onclick="showInfo()">Information</button>
+  <button onclick="showSocial()">Social Media</button>
+</div>
 
-      <!-- INFORMATION -->
-      <div class="section" id="infoSection">
-        <p class="text-muted">muzascript</p>
-          I am a script developer who focuses on creating and showcasing scripts.
-          This website is made to share information and my social media.
-        </p>
-        <button onclick="goBack()">Back</button>
-      </div>
+<!-- INFO -->
+<div class="section" id="infoSection">
+  <p style="opacity:.6;margin-bottom:10px">muzascript</p>
+  <p style="margin-bottom:15px">
+    I am a script developer who focuses on creating and showcasing scripts.
+    This website is made to share information and my social media.
+  </p>
+  <button onclick="goHome()">Back</button>
+</div>
 
-      <!-- SOCIAL MEDIA -->
-      <div class="section" id="socialSection">
-        <a class="link-btn" href="https://discord.gg/R6fSpCX7W" target="_blank">Discord</a>
-        <a class="link-btn" href="https://youtube.com/@muzascriptroblox" target="_blank">YouTube</a>
-        <a class="link-btn" href="https://tiktok.com/@bluearmy_82" target="_blank">TikTok</a>
-        <button onclick="goBack()" style="margin-top: 15px;">Back</button>
-      </div>
+<!-- SOCIAL -->
+<div class="section" id="socialSection">
+  <a class="link-btn" href="https://discord.gg/R6fSpCX7W" target="_blank">Discord</a>
+  <a class="link-btn" href="https://youtube.com/@muzascriptroblox" target="_blank">YouTube</a>
+  <a class="link-btn" href="https://tiktok.com/@bluearmy_82" target="_blank">TikTok</a>
+  <button onclick="showMessage()">➡ Message MuzaScript</button>
+</div>
 
-    </div>
-  </main>
+<!-- MESSAGE -->
+<div class="section" id="messageSection">
+  <textarea id="messageInput" placeholder="Write your message here..."></textarea>
+  <button onclick="sendMessage()">Send Message</button>
+  <button onclick="backToSocial()" style="margin-top:10px">Back</button>
+</div>
 
-  <!-- FOOTER -->
-  <footer>
-    ©2026 muzascript • Roblox Scripter / Script Showcaser 
-  </footer>
+</div>
+</main>
 
-  <script>
-    const text = "Hello! welcome to my website!";
-    let index = 0;
-    const typingElement = document.getElementById("typing");
-    const mainButtons = document.getElementById("mainButtons");
+<footer>
+©2026 muzascript • Roblox Scripter / Script Showcaser
+</footer>
 
-    function typeText() {
-      if (index < text.length) {
-        typingElement.innerHTML += text.charAt(index);
-        index++;
-        setTimeout(typeText, 80);
-      } else {
-        mainButtons.style.display = "flex";
-      }
-    }
+<script>
+const WEBHOOK_URL = "PASTE_WEBHOOK_URL_KAMU_DI_SINI";
 
-    function showInfo() {
-      mainButtons.style.display = "none";
-      document.getElementById("infoSection").style.display = "block";
-    }
+const typingText = "Hello! welcome to my website!";
+let i = 0;
 
-    function showSocial() {
-      mainButtons.style.display = "none";
-      document.getElementById("socialSection").style.display = "flex";
-      document.getElementById("socialSection").style.flexDirection = "column";
-      document.getElementById("socialSection").style.gap = "15px";
-    }
+const typing = document.getElementById("typing");
+const home = document.getElementById("homeButtons");
 
-    function goBack() {
-      document.getElementById("infoSection").style.display = "none";
-      document.getElementById("socialSection").style.display = "none";
-      mainButtons.style.display = "flex";
-    }
+function typeText(){
+  if(i < typingText.length){
+    typing.innerHTML += typingText.charAt(i++);
+    setTimeout(typeText,80);
+  }else{
+    home.style.display="flex";
+  }
+}
 
-    // start typing
-    typeText();
-  </script>
+function hideAll(){
+  document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+  home.style.display="none";
+}
+
+function showInfo(){
+  hideAll();
+  document.getElementById("infoSection").style.display="block";
+}
+
+function showSocial(){
+  hideAll();
+  document.getElementById("socialSection").style.display="flex";
+  document.getElementById("socialSection").style.flexDirection="column";
+  document.getElementById("socialSection").style.gap="15px";
+}
+
+function showMessage(){
+  hideAll();
+  document.getElementById("messageSection").style.display="block";
+}
+
+function goHome(){
+  hideAll();
+  home.style.display="flex";
+}
+
+function backToSocial(){
+  showSocial();
+}
+
+function sendMessage(){
+  const msg = document.getElementById("messageInput").value.trim();
+  if(!msg) return alert("Message empty");
+
+  fetch(WEBHOOK_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      content:"📩 **New Message from Website:**\n"+msg
+    })
+  });
+
+  document.getElementById("messageInput").value="";
+  alert("Message sent!");
+}
+
+typeText();
+</script>
 
 </body>
 </html>
