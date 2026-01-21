@@ -206,6 +206,36 @@
   }
 
   function submitName() {
+  const name = document.getElementById("username").value.trim();
+  if (!name) {
+    console.log("❌ nama kosong");
+    return;
+  }
+
+  const country = document.getElementById("visitorCountry")
+    ? document.getElementById("visitorCountry").innerText.replace("🌍 Country: ", "")
+    : "Unknown";
+
+  console.log("📤 KIRIM DATA:", name, country);
+
+  fetch("https://script.google.com/macros/s/AKfycbzYFaOk3VM93iVlE3D9GRSlvwHMtyLJnf8ZSwF7V15YG764X4c2VU1zllwrPbICBi_R/exec", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: name,
+      country: country
+    })
+  })
+  .then(res => res.text())
+  .then(data => {
+    console.log("✅ RESP FROM SCRIPT:", data);
+  })
+  .catch(err => {
+    console.error("❌ FETCH ERROR:", err);
+  });
+}
     const name = document.getElementById("username").value.trim();
     if (name.length < 2) return;
 
