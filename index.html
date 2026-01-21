@@ -92,12 +92,6 @@
 
     .section {
       display: none;
-      animation: fade 0.3s ease-in-out;
-    }
-
-    @keyframes fade {
-      from { opacity: 0; }
-      to { opacity: 1; }
     }
 
     .text-muted {
@@ -128,34 +122,25 @@
 
     <div class="typing" id="typing"></div>
 
-    <!-- INPUT NAME -->
     <div class="input-box" id="nameBox">
       <input type="text" id="username" placeholder="Enter your name">
       <button onclick="submitName()">Submit</button>
     </div>
 
-    <!-- MAIN BUTTONS -->
     <div class="buttons" id="mainButtons">
       <button onclick="showInfo()">Information</button>
       <button onclick="showSocial()">Social Media</button>
     </div>
 
-    <!-- INFO -->
     <div class="section" id="infoSection">
       <p class="text-muted">muzascript</p>
-
       <p style="margin-bottom:15px;">
         I am a script developer who focuses on creating and showcasing scripts.
-        This website is made to share information and my social media.
       </p>
-
-      <p class="text-muted" id="visitorCount">👀 Visitors: 0</p>
       <p class="text-muted" id="visitorCountry">🌍 Country: Detecting...</p>
-
       <button onclick="goBack()">Back</button>
     </div>
 
-    <!-- SOCIAL -->
     <div class="section" id="socialSection">
       <a class="link-btn" href="https://discord.gg/R6fSpCX7W" target="_blank">Discord</a>
       <a class="link-btn" href="https://youtube.com/@muzascriptroblox" target="_blank">YouTube</a>
@@ -167,7 +152,7 @@
 </main>
 
 <footer>
-  ©2026 muzascript • Roblox Scripter / Script Showcaser
+  ©2026 muzascript
 </footer>
 
 <script>
@@ -179,63 +164,28 @@
   let index = 0;
   let text = "";
 
-  function typeText(callback) {
+  function typeText(cb) {
     if (index < text.length) {
-      typingEl.innerHTML += text.charAt(index);
-      index++;
-      setTimeout(() => typeText(callback), 70);
-    } else if (callback) callback();
+      typingEl.innerHTML += text.charAt(index++);
+      setTimeout(() => typeText(cb), 70);
+    } else if (cb) cb();
   }
 
   function startIntro() {
-    const savedName = localStorage.getItem("muzascript_username");
+    const saved = localStorage.getItem("muzascript_username");
     typingEl.innerHTML = "";
     index = 0;
 
-    if (savedName) {
-      text = "Welcome back, " + savedName + "!";
-      typeText(() => {
-        mainButtons.style.display = "flex";
-      });
+    if (saved) {
+      text = "Welcome back, " + saved + "!";
+      typeText(() => mainButtons.style.display = "flex");
     } else {
-      text = "Hello welcome to muzascript website! I'm muzascript, what is your name?";
-      typeText(() => {
-        nameBox.style.display = "flex";
-      });
+      text = "Hello! I'm muzascript, what is your name?";
+      typeText(() => nameBox.style.display = "flex");
     }
   }
 
   function submitName() {
-  const name = document.getElementById("username").value.trim();
-  if (!name) {
-    console.log("❌ nama kosong");
-    return;
-  }
-
-  const country = document.getElementById("visitorCountry")
-    ? document.getElementById("visitorCountry").innerText.replace("🌍 Country: ", "")
-    : "Unknown";
-
-  console.log("📤 KIRIM DATA:", name, country);
-
-  fetch("https://script.google.com/macros/s/AKfycbzYFaOk3VM93iVlE3D9GRSlvwHMtyLJnf8ZSwF7V15YG764X4c2VU1zllwrPbICBi_R/exec", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      name: name,
-      country: country
-    })
-  })
-  .then(res => res.text())
-  .then(data => {
-    console.log("✅ RESP FROM SCRIPT:", data);
-  })
-  .catch(err => {
-    console.error("❌ FETCH ERROR:", err);
-  });
-}
     const name = document.getElementById("username").value.trim();
     if (name.length < 2) return;
 
@@ -246,59 +196,40 @@
     localStorage.setItem("muzascript_username", name);
     nameBox.style.display = "none";
 
-    // 🔥 KIRIM KE GOOGLE SHEET
     fetch("https://script.google.com/macros/s/AKfycbzYFaOk3VM93iVlE3D9GRSlvwHMtyLJnf8ZSwF7V15YG764X4c2VU1zllwrPbICBi_R/exec", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: name,
-        country: country
-      })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, country })
     });
 
     typingEl.innerHTML = "";
     index = 0;
     text = "Nice to meet you, " + name + "!";
-
-    typeText(() => {
-      mainButtons.style.display = "flex";
-    });
+    typeText(() => mainButtons.style.display = "flex");
   }
 
   function showInfo() {
     mainButtons.style.display = "none";
-    document.getElementById("infoSection").style.display = "block";
+    infoSection.style.display = "block";
   }
 
   function showSocial() {
     mainButtons.style.display = "none";
-    const s = document.getElementById("socialSection");
-    s.style.display = "flex";
-    s.style.flexDirection = "column";
-    s.style.gap = "15px";
+    socialSection.style.display = "flex";
+    socialSection.style.flexDirection = "column";
+    socialSection.style.gap = "15px";
   }
 
   function goBack() {
-    document.getElementById("infoSection").style.display = "none";
-    document.getElementById("socialSection").style.display = "none";
+    infoSection.style.display = "none";
+    socialSection.style.display = "none";
     mainButtons.style.display = "flex";
   }
 
-  // 🌍 DETEKSI NEGARA
   fetch("https://ipapi.co/json/")
-    .then(res => res.json())
-    .then(data => {
-      if (countryEl) {
-        countryEl.innerText = "🌍 Country: " + data.country_name;
-      }
-    })
-    .catch(() => {
-      if (countryEl) {
-        countryEl.innerText = "🌍 Country: Unknown";
-      }
-    });
+    .then(r => r.json())
+    .then(d => countryEl.innerText = "🌍 Country: " + d.country_name)
+    .catch(() => countryEl.innerText = "🌍 Country: Unknown");
 
   startIntro();
 </script>
