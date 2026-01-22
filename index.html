@@ -165,68 +165,6 @@ go("home"); type();
   console.log("🔥 Firebase CONNECTED");
   </script>
 
-  <script>
-function sendGlobalMessage() {
-  const name =
-    localStorage.getItem("username") ||
-    (localStorage.setItem("username", "Anonymous"),
-     "Anonymous");
-
-  const text = document.getElementById("chatText").value.trim();
-  if (!text) return alert("Pesan kosong");
-
-  window.addDoc(
-    window.collection(window.db, "messages"),
-    {
-      name: name,
-      text: text,
-      createdAt: window.serverTimestamp()
-    }
-  );
-
-  document.getElementById("chatText").value = "";
-}
-  </script>
-
-<script>
-window.onload = () => {
-  const q = window.query(
-    window.collection(window.db, "messages"),
-    window.orderBy("createdAt", "asc")
-  );
-
-  window.onSnapshot(q, snap => {
-    const box = document.getElementById("chatBox");
-    box.innerHTML = "";
-    snap.forEach(doc => {
-      const d = doc.data();
-      box.innerHTML += `<p><b>${d.name}</b>: ${d.text}</p>`;
-    });
-  });
-};
-</script>
-
-  <script>
-function sendChat() {
-  const name =
-    document.getElementById("chatName").value.trim() || "Anonymous";
-
-  const text = document.getElementById("chatText").value.trim();
-  if (!text) return alert("Pesan kosong");
-
-  window.addDoc(
-    window.collection(window.db, "messages"),
-    {
-      name: name,
-      text: text,
-      createdAt: window.serverTimestamp()
-    }
-  );
-
-  document.getElementById("chatText").value = "";
-}
-  </script>
-  
 </body>
 </html>
 
