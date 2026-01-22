@@ -79,7 +79,49 @@ footer{text-align:center;padding:12px;background:#151515;border-top:1px solid #2
 <footer>©2026 muzascript • Roblox Scripter</footer>
 
 <!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore,collection,addDoc,query,orderBy,onSnapshot,serverTimestamp }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* 🔴 GANTI DENGAN CONFIG FIREBASE KAMU */
+const firebaseConfig = {
+  PASTE_FIREBASE_CONFIG
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const chatBox=document.getElementById("chatBox");
+const chatName=document.getElementById("chatName");
+const chatText=document.getElementById("chatText");
+
+chatName.value = localStorage.getItem("chatName") || "";
+
+const q=query(collection(db,"messages"),orderBy("createdAt"));
+onSnapshot(q,snap=>{
+  chatBox.innerHTML="";
+  snap.forEach(doc=>{
+    const d=doc.data();
+    const div=document.createElement("div");
+    div.className="msg";
+    div.innerHTML=`<span class="name">${d.name}</span>: ${d.text}`;
+    chatBox.appendChild(div);
+  });
+  chatBox.scrollTop=chatBox.scrollHeight;
+});
+
+window.sendChat = async ()=>{
+  const text=chatText.value.trim();
+  if(!text) return;
+  const name=chatName.value.trim()||"Anonymous";
+  localStorage.setItem("chatName",name);
+  await addDoc(collection(db,"messages"),{
+    name,text,createdAt:serverTimestamp()
+  });
+  chatText.value="";
+};
+</script>
 
 <script>
 /* DISCORD WEBHOOK */
@@ -165,7 +207,7 @@ go("home"); type();
   console.log("🔥 Firebase CONNECTED");
   </script>
 
-<script type="module">
+  <script type="module">
 import {
   collection,
   addDoc,
@@ -240,7 +282,69 @@ window.sendChat = async () => {
   localStorage.setItem("lastSendTime", now);
   chatText.value = "";
 };
+  </script>
+  
+  <script>
+function sendGlobalMessage() {
+  const name =
+    localStorage.getItem("username") ||
+    (localStorage.setItem("username", "Anonymous"),
+     "Anonymous");
+
+  const text = document.getElementById("chatText").value.trim();
+  if (!text) return alert("Pesan kosong");
+
+  window.addDoc(
+    window.collection(window.db, "messages"),
+    {
+      name: name,
+      text: text,
+      createdAt: window.serverTimestamp()
+    }
+  );
+
+  document.getElementById("chatText").value = "";
+}
+  </script>
+
+<script>
+window.onload = () => {
+  const q = window.query(
+    window.collection(window.db, "messages"),
+    window.orderBy("createdAt", "asc")
+  );
+
+  window.onSnapshot(q, snap => {
+    const box = document.getElementById("chatBox");
+    box.innerHTML = "";
+    snap.forEach(doc => {
+      const d = doc.data();
+      box.innerHTML += `<p><b>${d.name}</b>: ${d.text}</p>`;
+    });
+  });
+};
 </script>
+
+  <script>
+function sendChat() {
+  const name =
+    document.getElementById("chatName").value.trim() || "Anonymous";
+
+  const text = document.getElementById("chatText").value.trim();
+  if (!text) return alert("Pesan kosong");
+
+  window.addDoc(
+    window.collection(window.db, "messages"),
+    {
+      name: name,
+      text: text,
+      createdAt: window.serverTimestamp()
+    }
+  );
+
+  document.getElementById("chatText").value = "";
+}
+  </script>
   
 </body>
 </html>
