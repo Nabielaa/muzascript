@@ -165,6 +165,83 @@ go("home"); type();
   console.log("🔥 Firebase CONNECTED");
   </script>
 
+<script type="module">
+import {
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const chatBox = document.getElementById("chatBox");
+const chatName = document.getElementById("chatName");
+const chatText = document.getElementById("chatText");
+
+// ===== LISTEN CHAT =====
+const q = query(
+  collection(window.db, "messages"),
+  orderBy("createdAt", "asc")
+);
+
+onSnapshot(q, snap => {
+  chatBox.innerHTML = "";
+
+  snap.forEach(doc => {
+    const d = doc.data();
+    const date = d.createdAt?.toDate();
+
+    let timeWIB = "";
+    if (date) {
+      timeWIB = new Intl.DateTimeFormat("id-ID", {
+        timeZone: "Asia/Jakarta",
+        hour: "2-digit",
+        minute: "2-digit",
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      }).format(date);
+    }
+
+    chatBox.innerHTML += `
+      <div class="msg">
+        <span class="name">${d.name}</span>
+        <span style="font-size:11px;color:#888"> • ${timeWIB} WIB</span><br>
+        ${d.text}
+      </div>
+    `;
+  });
+
+  chatBox.scrollTop = chatBox.scrollHeight;
+});
+
+// ===== SEND CHAT (ANTI SPAM 83 DETIK) =====
+window.sendChat = async () => {
+  const now = Date.now();
+  const last = localStorage.getItem("lastSendTime");
+
+  if (last && now - last < 83000) {
+    const sisa = Math.ceil((83000 - (now - last)) / 1000);
+    alert(`⏳ Tunggu ${sisa} detik sebelum kirim lagi`);
+    return;
+  }
+
+  const name = chatName.value.trim() || "Anonymous";
+  const text = chatText.value.trim();
+  if (!text) return;
+
+  await addDoc(collection(window.db, "messages"), {
+    name,
+    text,
+    createdAt: serverTimestamp()
+  });
+
+  localStorage.setItem("lastSendTime", now);
+  chatText.value = "";
+};
+</script>
+  
 </body>
 </html>
 
