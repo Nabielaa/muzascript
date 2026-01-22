@@ -257,7 +257,7 @@ function sendChat() {
   if (!text) return alert("Pesan kosong");
 
   window.addDoc(
-    window.collection(window.db, "messages"),
+    window.collection(window.db, "messages_prod"),
     {
       name: name,
       text: text,
