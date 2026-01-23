@@ -6,22 +6,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
 body{background:#0f0f0f;color:#fff;min-height:100vh;display:flex;flex-direction:column}
 header{padding:15px;text-align:center;background:#151515;border-bottom:1px solid #222}
 header h1{color:#00ffaa;font-size:20px}
 main{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
 .container{max-width:520px;width:100%;text-align:center}
 .page{display:none;flex-direction:column;gap:12px}
-.typing{font-size:22px;min-height:30px;margin-bottom:20px}
-button,a{padding:12px;border-radius:8px;border:none;background:#00ffaa;color:#000;font-size:16px;cursor:pointer}
-input,textarea{padding:10px;border-radius:6px;border:none}
-textarea{min-height:90px}
-.chatbox{background:#151515;border-radius:8px;padding:10px;height:260px;overflow-y:auto;text-align:left}
+.typing{font-size:22px;min-height:30px;margin-bottom:25px}
+
+button,a{
+  padding:12px;border-radius:8px;border:none;
+  background:#00ffaa;color:#000;
+  font-size:16px;cursor:pointer;
+  text-decoration:none
+}
+button:hover,a:hover{background:#00cc88}
+
+input,textarea{
+  padding:10px;border-radius:6px;border:none;outline:none
+}
+textarea{min-height:90px;resize:none}
+
+.chatbox{
+  background:#151515;border-radius:8px;
+  padding:10px;height:260px;
+  overflow-y:auto;text-align:left
+}
+
 .msg{margin-bottom:10px}
 .name{color:#00ffaa;font-weight:bold}
 .time{font-size:11px;opacity:.6}
-footer{text-align:center;padding:12px;background:#151515;border-top:1px solid #222;font-size:13px;color:#aaa}
+
+footer{
+  text-align:center;padding:12px;
+  background:#151515;border-top:1px solid #222;
+  font-size:13px;color:#aaa
+}
 </style>
 </head>
 
@@ -32,24 +53,39 @@ footer{text-align:center;padding:12px;background:#151515;border-top:1px solid #2
 <main>
 <div class="container">
 
+<!-- HOME -->
 <div class="page" id="home">
   <div class="typing" id="typing"></div>
+  <button onclick="go('info')">Information</button>
   <button onclick="go('social')">Social</button>
 </div>
 
-<div class="page" id="social">
-  <button onclick="go('chat')">💬 Global Chat</button>
-  <button onclick="go('send')">📩 Send Message</button>
+<!-- INFORMATION -->
+<div class="page" id="info">
+  <p style="opacity:.6">muzascript</p>
+  <p>I am a script developer who focuses on creating and showcasing scripts.</p>
   <button onclick="go('home')">⬅ Back</button>
 </div>
 
+<!-- SOCIAL -->
+<div class="page" id="social">
+  <a href="https://discord.gg/R6fSpCX7W" target="_blank">Discord</a>
+  <a href="https://youtube.com/@muzascriptroblox" target="_blank">YouTube</a>
+  <a href="https://tiktok.com/@bluearmy_82" target="_blank">TikTok</a>
+  <button onclick="go('send')">📩 Send Message to MuzaScript</button>
+  <button onclick="go('chat')">💬 Global Chat</button>
+  <button onclick="go('home')">⬅ Back</button>
+</div>
+
+<!-- SEND MESSAGE -->
 <div class="page" id="send">
   <input id="dmName" placeholder="Your name (optional)">
-  <textarea id="dmText" placeholder="Write message..."></textarea>
+  <textarea id="dmText" placeholder="Write your message..."></textarea>
   <button onclick="sendToDiscord()">Send</button>
   <button onclick="go('social')">⬅ Back</button>
 </div>
 
+<!-- GLOBAL CHAT -->
 <div class="page" id="chat">
   <input id="chatName" placeholder="Your name (default: Anonymous)">
   <div class="chatbox" id="chatBox"></div>
@@ -61,7 +97,7 @@ footer{text-align:center;padding:12px;background:#151515;border-top:1px solid #2
 </div>
 </main>
 
-<footer>©2026 muzascript</footer>
+<footer>©2026 muzascript • Roblox Scripter / Script Showcaser</footer>
 
 <!-- ================= FIREBASE ================= -->
 <script type="module">
@@ -71,7 +107,6 @@ import {
   query, orderBy, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* 🔴 FIREBASE CONFIG KAMU */
 const firebaseConfig = {
   apiKey: "AIzaSyA0_VKg_GW208z3y4oPnDzkMrF-XW4uqWo",
   authDomain: "muzascript-anonymouschat.firebaseapp.com",
@@ -134,7 +169,7 @@ window.sendChat = async () => {
 };
 </script>
 
-<!-- ================= DISCORD WEBHOOK ================= -->
+<!-- DISCORD WEBHOOK -->
 <script>
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1463512329890173086/1vep4y4yMj5FOJA_LGD08UkdklYRggkkBYnMbJ85Mi02qSxuu7M8d5PXNj6XRFOpJSiA";
 
