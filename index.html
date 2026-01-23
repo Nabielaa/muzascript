@@ -12,16 +12,15 @@ header{padding:15px;text-align:center;background:#151515;border-bottom:1px solid
 header h1{color:#00ffaa;font-size:20px}
 main{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
 .container{max-width:520px;width:100%;text-align:center}
-.typing{font-size:22px;min-height:30px;margin-bottom:25px}
 .page{display:none;flex-direction:column;gap:12px}
-button,a{padding:12px;border-radius:8px;border:none;background:#00ffaa;color:#000;font-size:16px;cursor:pointer;text-decoration:none}
-button:hover,a:hover{background:#00cc88}
-input,textarea{padding:10px;border-radius:6px;border:none;outline:none}
+.typing{font-size:22px;min-height:30px;margin-bottom:25px}
+button,a{padding:12px;border-radius:8px;border:none;background:#00ffaa;color:#000;font-size:16px;cursor:pointer}
+input,textarea{padding:10px;border-radius:6px;border:none}
 textarea{min-height:90px;resize:none}
 .chatbox{background:#151515;border-radius:8px;padding:10px;height:260px;overflow-y:auto;text-align:left}
 .msg{margin-bottom:10px}
 .name{color:#00ffaa;font-weight:bold}
-.time{opacity:.5;font-size:11px;margin-left:4px}
+.time{font-size:11px;opacity:.5}
 footer{text-align:center;padding:12px;background:#151515;border-top:1px solid #222;font-size:13px;color:#aaa}
 </style>
 </head>
@@ -35,22 +34,12 @@ footer{text-align:center;padding:12px;background:#151515;border-top:1px solid #2
 
 <div class="page" id="home">
   <div class="typing" id="typing"></div>
-  <button onclick="go('info')">Information</button>
   <button onclick="go('social')">Social</button>
 </div>
 
-<div class="page" id="info">
-  <p style="opacity:.6">muzascript</p>
-  <p>I am a script developer who focuses on creating and showcasing scripts.</p>
-  <button onclick="go('home')">⬅ Back</button>
-</div>
-
 <div class="page" id="social">
-  <a href="https://discord.gg/R6fSpCX7W" target="_blank">Discord</a>
-  <a href="https://youtube.com/@muzascriptroblox" target="_blank">YouTube</a>
-  <a href="https://tiktok.com/@bluearmy_82" target="_blank">TikTok</a>
-  <button onclick="go('send')">📩 Send Message</button>
   <button onclick="go('chat')">💬 Global Chat</button>
+  <button onclick="go('send')">📩 Send Message</button>
   <button onclick="go('home')">⬅ Back</button>
 </div>
 
@@ -66,15 +55,15 @@ footer{text-align:center;padding:12px;background:#151515;border-top:1px solid #2
   <div class="chatbox" id="chatBox"></div>
   <textarea id="chatText" placeholder="Type message..."></textarea>
   <button onclick="sendChat()">Send</button>
-  <button onclick="go('social')">⬅ Back</button>
+  <button onclick="leaveChat()">⬅ Back</button>
 </div>
 
 </div>
 </main>
 
-<footer>©2026 muzascript</footer>
+<footer>©2026 muzascript • Roblox Scripter / Script Showcaser</footer>
 
-<!-- ================= FIREBASE ================= -->
+<!-- ============ FIREBASE ============ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
@@ -94,49 +83,54 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const chatBox = document.getElementById("chatBox");
-const chatName = document.getElementById("chatName");
-const chatText = document.getElementById("chatText");
+let unsubscribe = null;
 
-const q = query(
-  collection(db, "messages_prod"),
-  orderBy("createdAt", "asc")
-);
+window.enterChat = () => {
+  const box = document.getElementById("chatBox");
+  box.innerHTML = "";
 
-onSnapshot(q, snap => {
-  chatBox.innerHTML = "";
-  snap.forEach(doc => {
-    const d = doc.data();
-    const date = d.createdAt?.toDate();
-    const time = date
-      ? new Intl.DateTimeFormat("id-ID", {
-          timeZone: "Asia/Jakarta",
-          hour: "2-digit",
-          minute: "2-digit",
-          day: "2-digit",
-          month: "short",
-          year: "numeric"
-        }).format(date)
-      : "";
+  const q = query(
+    collection(db, "messages_prod"),
+    orderBy("createdAt", "asc")
+  );
 
-    const div = document.createElement("div");
-    div.className = "msg";
-    div.innerHTML = `
-      <span class="name">${d.name}</span>
-      <span class="time">• ${time} WIB</span><br>
-      ${d.text}
-    `;
-    chatBox.appendChild(div);
+  unsubscribe = onSnapshot(q, snap => {
+    box.innerHTML = "";
+    snap.forEach(doc => {
+      const d = doc.data();
+      const date = d.createdAt?.toDate();
+      const time = date
+        ? new Intl.DateTimeFormat("id-ID", {
+            timeZone:"Asia/Jakarta",
+            hour:"2-digit",
+            minute:"2-digit",
+            day:"2-digit",
+            month:"short",
+            year:"numeric"
+          }).format(date)
+        : "";
+
+      box.innerHTML += `
+        <div class="msg">
+          <span class="name">${d.name}</span>
+          <span class="time"> • ${time} WIB</span><br>
+          ${d.text}
+        </div>
+      `;
+    });
+    box.scrollTop = box.scrollHeight;
   });
-  chatBox.scrollTop = chatBox.scrollHeight;
-});
+};
+
+window.leaveChat = () => {
+  if (unsubscribe) unsubscribe();
+  go("social");
+};
 
 window.sendChat = async () => {
   const now = Date.now();
   const last = localStorage.getItem("lastSend") || 0;
-  if (now - last < 83000) {
-    return alert("⏳ Tunggu 83 detik");
-  }
+  if (now - last < 83000) return alert("⏳ Tunggu 83 detik");
 
   const text = chatText.value.trim();
   if (!text) return;
@@ -152,23 +146,21 @@ window.sendChat = async () => {
 };
 </script>
 
-<!-- ============ DISCORD WEBHOOK ============ -->
+<!-- ============ WEBHOOK ============ -->
 <script>
-const WEBHOOK_URL = "PASTE_WEBHOOK_KAMU";
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1463512329890173086/1vep4y4yMj5FOJA_LGD08UkdklYRggkkBYnMbJ85Mi02qSxuu7M8d5PXNj6XRFOpJSiA";
 
 function sendToDiscord(){
   const name = dmName.value || "Anonymous";
   const text = dmText.value.trim();
   if(!text) return;
-
   fetch(WEBHOOK_URL,{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({ content:`👤 ${name}\n\n${text}` })
   });
-
   dmText.value="";
-  alert("Message sent!");
+  alert("Sent!");
 }
 </script>
 
@@ -176,17 +168,17 @@ function sendToDiscord(){
 function go(id){
   document.querySelectorAll(".page").forEach(p=>p.style.display="none");
   document.getElementById(id).style.display="flex";
+  if(id==="chat") enterChat();
   if(id==="home") startTyping();
 }
 
 const text="Hello! welcome to my website!";
 let i=0;
 function startTyping(){
-  const el=document.getElementById("typing");
-  el.innerHTML=""; i=0;
+  typing.innerHTML=""; i=0;
   (function t(){
     if(i<text.length){
-      el.innerHTML+=text[i++];
+      typing.innerHTML+=text[i++];
       setTimeout(t,80);
     }
   })();
