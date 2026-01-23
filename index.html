@@ -10,8 +10,10 @@
 body{background:#0f0f0f;color:#fff;min-height:100vh;display:flex;flex-direction:column}
 header{padding:15px;text-align:center;background:#151515;border-bottom:1px solid #222}
 header h1{color:#00ffaa;font-size:20px}
+
 main{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
 .container{max-width:520px;width:100%;text-align:center}
+
 .page{display:none;flex-direction:column;gap:12px}
 
 button,a{
@@ -26,22 +28,46 @@ input,textarea{
 }
 textarea{min-height:90px;resize:none}
 
+.typing{
+  font-size:22px;
+  min-height:30px;
+  margin-bottom:25px;
+  color:#00ffaa;
+  letter-spacing:1px;
+}
+
 .chatbox{
   background:#151515;
-  border-radius:10px;
+  border-radius:8px;
   padding:10px;
   height:260px;
   overflow-y:auto;
-  text-align:left
+  text-align:left;
 }
-.msg{margin-bottom:10px}
-.name{color:#00ffaa;font-weight:bold}
-.time{font-size:11px;opacity:.5}
+
+.msg{
+  margin-bottom:10px;
+  line-height:1.4;
+}
+
+.msg .name{
+  color:#00ffaa;
+  font-weight:bold;
+}
+
+.msg .time{
+  font-size:11px;
+  opacity:.5;
+  margin-left:4px;
+}
 
 footer{
-  text-align:center;padding:12px;
-  background:#151515;border-top:1px solid #222;
-  font-size:13px;color:#aaa
+  text-align:center;
+  padding:12px;
+  background:#151515;
+  border-top:1px solid #222;
+  font-size:13px;
+  color:#aaa
 }
 </style>
 </head>
@@ -55,7 +81,7 @@ footer{
 
 <!-- HOME -->
 <div class="page" id="home">
-  <p>Hello! welcome to my website!</p>
+  <div class="typing" id="typing"></div>
   <button onclick="go('info')">Information</button>
   <button onclick="go('social')">Social</button>
 </div>
@@ -72,20 +98,11 @@ footer{
   <a href="https://discord.gg/R6fSpCX7W" target="_blank">Discord</a>
   <a href="https://youtube.com/@muzascriptroblox" target="_blank">YouTube</a>
   <a href="https://tiktok.com/@bluearmy_82" target="_blank">TikTok</a>
-  <button onclick="go('send')">📩 Send Message</button>
   <button onclick="go('chat')">💬 Global Chat</button>
   <button onclick="go('home')">⬅ Back</button>
 </div>
 
-<!-- SEND TO DISCORD -->
-<div class="page" id="send">
-  <input id="dmName" placeholder="Your name (optional)">
-  <textarea id="dmText" placeholder="Write your message..."></textarea>
-  <button onclick="sendToDiscord()">Send</button>
-  <button onclick="go('social')">⬅ Back</button>
-</div>
-
-<!-- GLOBAL CHAT -->
+<!-- CHAT -->
 <div class="page" id="chat">
   <input id="chatName" placeholder="Your name (default: Anonymous)">
   <div class="chatbox" id="chatBox"></div>
@@ -97,44 +114,17 @@ footer{
 </div>
 </main>
 
-<footer>©2026 muzascript • Roblox Scripter / Script Showcaser</footer>
+<footer>©2026 muzascript • Roblox Scripter</footer>
 
-<!-- DISCORD WEBHOOK -->
-<script>
-const WEBHOOK_URL = "ISI_WEBHOOK_KAMU";
-
-function sendToDiscord(){
-  const name = dmName.value.trim() || "Anonymous";
-  const text = dmText.value.trim();
-  if(!text) return alert("Message empty");
-
-  fetch(WEBHOOK_URL,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      content:`📩 **Message from Website**\n👤 ${name}\n\n${text}`
-    })
-  });
-
-  dmText.value="";
-  alert("Message sent!");
-}
-
-function go(id){
-  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
-  document.getElementById(id).style.display="flex";
-}
-go("home");
-</script>
-
-<!-- FIREBASE + CHAT -->
+<!-- ================= FIREBASE ================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getFirestore,collection,addDoc,
-  query,orderBy,onSnapshot,serverTimestamp
+  getFirestore, collection, addDoc,
+  query, orderBy, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+/* 🔥 CONFIG FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyA0_VKg_GW208z3y4oPnDzkMrF-XW4uqWo",
   authDomain: "muzascript-anonymouschat.firebaseapp.com",
@@ -147,44 +137,49 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+const chatBox = document.getElementById("chatBox");
+const chatText = document.getElementById("chatText");
+const chatName = document.getElementById("chatName");
+
 chatName.value = localStorage.getItem("chatName") || "";
 
-const q = query(collection(db,"messages"), orderBy("createdAt"));
-onSnapshot(q, snap => {
+const q = query(collection(db,"messages"), orderBy("createdAt","asc"));
+
+onSnapshot(q, snap=>{
   chatBox.innerHTML="";
   snap.forEach(doc=>{
-    const d=doc.data();
-    const time=d.createdAt
-      ? new Intl.DateTimeFormat("id-ID",{
-          timeZone:"Asia/Jakarta",
-          hour:"2-digit",minute:"2-digit",
-          day:"2-digit",month:"short",year:"numeric"
-        }).format(d.createdAt.toDate())
-      : "";
-
-    chatBox.innerHTML+=`
+    const d = doc.data();
+    let time = "";
+    if(d.createdAt){
+      const date = d.createdAt.toDate();
+      time = new Intl.DateTimeFormat("id-ID",{
+        timeZone:"Asia/Jakarta",
+        hour:"2-digit", minute:"2-digit",
+        day:"2-digit", month:"short", year:"numeric"
+      }).format(date);
+    }
+    chatBox.innerHTML += `
       <div class="msg">
-        <div class="name">${d.name}
-          <span class="time">• ${time} WIB</span>
-        </div>
+        <span class="name">${d.name}</span>
+        <span class="time">• ${time} WIB</span><br>
         ${d.text}
-      </div>`;
+      </div>
+    `;
   });
-  chatBox.scrollTop=chatBox.scrollHeight;
+  chatBox.scrollTop = chatBox.scrollHeight;
 });
 
 window.sendChat = async ()=>{
-  const now=Date.now();
-  const last=localStorage.getItem("lastSend");
-  if(last && now-last<83000){
-    alert("⏳ Tunggu sebentar sebelum kirim lagi");
+  const now = Date.now();
+  const last = localStorage.getItem("lastSend") || 0;
+  if(now-last < 83000){
+    alert(`⏳ Tunggu ${Math.ceil((83000-(now-last))/1000)} detik`);
     return;
   }
-
-  const text=chatText.value.trim();
+  const text = chatText.value.trim();
   if(!text) return;
 
-  const name=chatName.value.trim()||"Anonymous";
+  const name = chatName.value.trim() || "Anonymous";
   localStorage.setItem("chatName",name);
   localStorage.setItem("lastSend",now);
 
@@ -193,6 +188,35 @@ window.sendChat = async ()=>{
   });
   chatText.value="";
 };
+</script>
+
+<!-- ================= UI SCRIPT ================= -->
+<script>
+/* TYPING */
+const typingText = "Hello! welcome to my website!";
+let i = 0;
+const typingEl = document.getElementById("typing");
+
+function startTyping(){
+  typingEl.innerHTML="";
+  i=0;
+  typeChar();
+}
+function typeChar(){
+  if(i < typingText.length){
+    typingEl.innerHTML += typingText.charAt(i++);
+    setTimeout(typeChar,80);
+  }
+}
+
+/* NAV */
+function go(id){
+  document.querySelectorAll(".page").forEach(p=>p.style.display="none");
+  document.getElementById(id).style.display="flex";
+  if(id==="home") startTyping();
+}
+
+go("home");
 </script>
 
 </body>
