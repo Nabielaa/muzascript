@@ -52,27 +52,32 @@ footer{
 <main>
 <div class="container">
 
+<!-- HOME -->
 <div class="page" id="home">
   <div class="typing" id="typing"></div>
   <button onclick="go('info')">Information</button>
   <button onclick="go('social')">Social</button>
 </div>
 
+<!-- INFO -->
 <div class="page" id="info">
   <p style="opacity:.6">muzascript</p>
   <p>I am a script developer who focuses on creating and showcasing scripts.</p>
   <button onclick="go('home')">⬅ Back</button>
 </div>
 
+<!-- SOCIAL -->
 <div class="page" id="social">
   <a href="https://discord.gg/R6fSpCX7W" target="_blank">Discord</a>
   <a href="https://youtube.com/@muzascriptroblox" target="_blank">YouTube</a>
   <a href="https://tiktok.com/@bluearmy_82" target="_blank">TikTok</a>
   <button onclick="go('send')">📩 Send Message</button>
   <button onclick="go('chat')">💬 Global Chat</button>
+  <button onclick="go('second')">🌐 Second Website</button>
   <button onclick="go('home')">⬅ Back</button>
 </div>
 
+<!-- SEND MESSAGE -->
 <div class="page" id="send">
   <input id="dmName" placeholder="Your name (optional)">
   <textarea id="dmText" placeholder="Write your message..."></textarea>
@@ -80,6 +85,7 @@ footer{
   <button onclick="go('social')">⬅ Back</button>
 </div>
 
+<!-- GLOBAL CHAT -->
 <div class="page" id="chat">
   <input id="chatName" placeholder="Your name">
   <div class="chatbox" id="chatBox"></div>
@@ -88,10 +94,19 @@ footer{
   <button onclick="go('social')">⬅ Back</button>
 </div>
 
+<!-- SECOND WEBSITE -->
+<div class="page" id="second">
+  <p style="opacity:.7">MuzaScript – Brat Generator</p>
+  <a href="https://nabielaa.github.io/bratgenerator_muzascript/" target="_blank">
+    🚀 Open Brat Generator Website
+  </a>
+  <button onclick="go('social')">⬅ Back</button>
+</div>
+
 </div>
 </main>
 
-<footer>©2026 muzascript • Roblox Scripter / Script Showcaser</footer>
+<footer>©2026 muzascript • Roblox Scripter</footer>
 
 <!-- 🔥 FIREBASE -->
 <script type="module">
@@ -105,7 +120,6 @@ import {
   getAuth, signInAnonymously, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* 🔑 ADMIN UID */
 const ADMIN_UIDS = ["knqUvbDr48UnZ6ulA4gbqSgw8DC2"];
 
 const firebaseConfig = {
@@ -121,41 +135,30 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-let myUID = null;
-let chatLocked = false;
+let myUID=null, chatLocked=false;
 
-/* AUTH */
 signInAnonymously(auth);
-onAuthStateChanged(auth,user=>{
-  if(user){
-    myUID = user.uid;
-    alert("🔑 UID KAMU:\n\n" + myUID);
+onAuthStateChanged(auth,u=>{
+  if(u){
+    myUID=u.uid;
+    alert("🔑 UID KAMU:\n\n"+myUID);
   }
 });
 
-/* SETTINGS INIT (AMAN) */
-const settingsRef = doc(db,"settings","global");
+const settingsRef=doc(db,"settings","global");
 setDoc(settingsRef,{locked:false},{merge:true});
+onSnapshot(settingsRef,s=>chatLocked=s.data()?.locked??false);
 
-onSnapshot(settingsRef,s=>{
-  chatLocked = s.data()?.locked ?? false;
-});
-
-/* CHAT LISTENER */
-const chatBox = document.getElementById("chatBox");
+const chatBox=document.getElementById("chatBox");
 onSnapshot(
   query(collection(db,"messages"),orderBy("createdAt","asc")),
   snap=>{
     chatBox.innerHTML="";
     snap.forEach(d=>{
       const m=d.data();
-      const isAdmin = ADMIN_UIDS.includes(m.uid);
-      const time = m.createdAt
-        ? new Intl.DateTimeFormat("id-ID",{
-            timeZone:"Asia/Jakarta",
-            hour:"2-digit",minute:"2-digit",
-            day:"2-digit",month:"short",year:"numeric"
-          }).format(m.createdAt.toDate())
+      const isAdmin=ADMIN_UIDS.includes(m.uid);
+      const time=m.createdAt
+        ? new Intl.DateTimeFormat("id-ID",{timeZone:"Asia/Jakarta",hour:"2-digit",minute:"2-digit",day:"2-digit",month:"short",year:"numeric"}).format(m.createdAt.toDate())
         :"";
       chatBox.innerHTML+=`
         <div class="msg">
@@ -165,50 +168,40 @@ onSnapshot(
           ${m.text}
         </div>`;
     });
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.scrollTop=chatBox.scrollHeight;
   }
 );
 
-/* SEND CHAT */
-window.sendChat = async()=>{
-  if(!myUID) return alert("⏳ Auth belum siap, coba lagi");
-
-  const text = chatText.value.trim();
+window.sendChat=async()=>{
+  if(!myUID) return;
+  const text=chatText.value.trim();
   if(!text) return;
 
-  const name = chatName.value.trim() || "Anonymous";
-  const isAdmin = ADMIN_UIDS.includes(myUID);
+  const name=chatName.value.trim()||"Anonymous";
+  const isAdmin=ADMIN_UIDS.includes(myUID);
 
-  /* ADMIN COMMAND */
   if(isAdmin && text.startsWith("?")){
-    if(text === "?clear"){
-      const snap = await getDocs(collection(db,"messages"));
+    if(text=="?clear"){
+      const snap=await getDocs(collection(db,"messages"));
       snap.forEach(d=>deleteDoc(d.ref));
     }
-    if(text === "?lock") await updateDoc(settingsRef,{locked:true});
-    if(text === "?unlock") await updateDoc(settingsRef,{locked:false});
+    if(text=="?lock") await updateDoc(settingsRef,{locked:true});
+    if(text=="?unlock") await updateDoc(settingsRef,{locked:false});
     chatText.value="";
     return;
   }
 
-  if(chatLocked && !isAdmin)
-    return alert("🔒 Global chat dikunci admin");
+  if(chatLocked && !isAdmin) return alert("🔒 Chat dikunci admin");
 
   if(!isAdmin){
-    const now = Date.now();
-    const last = localStorage.getItem("lastSend") || 0;
-    if(now - last < 83000)
-      return alert("⏳ Tunggu 83 detik");
-    localStorage.setItem("lastSend", now);
+    const now=Date.now(), last=localStorage.getItem("lastSend")||0;
+    if(now-last<83000) return alert("⏳ Tunggu 83 detik");
+    localStorage.setItem("lastSend",now);
   }
 
   await addDoc(collection(db,"messages"),{
-    uid: myUID,
-    name,
-    text,
-    createdAt: serverTimestamp()
+    uid:myUID,name,text,createdAt:serverTimestamp()
   });
-
   chatText.value="";
 };
 </script>
