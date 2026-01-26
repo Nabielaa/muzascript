@@ -36,7 +36,7 @@ textarea{min-height:90px;resize:none}
 
 .msg{margin-bottom:10px}
 .name{color:#00ffaa;font-weight:bold}
-.admin{color:#ff5555;font-size:11px;margin-left:4px}
+.admin{color:#ff5555;font-size:11px;margin-left:6px}
 .time{font-size:11px;opacity:.6}
 
 footer{
@@ -84,7 +84,7 @@ footer{
 </div>
 
 <div class="page" id="chat">
-  <input id="chatName" placeholder="Your name (default: Anonymous)">
+  <input id="chatName" placeholder="Your name">
   <div class="chatbox" id="chatBox"></div>
   <textarea id="chatText" placeholder="Type message..."></textarea>
   <button onclick="sendChat()">Send</button>
@@ -102,22 +102,19 @@ footer{
 </div>
 </main>
 
-<footer>©2026 muzascript • Roblox Scripter / Script Showcaser</footer>
+<footer>©2026 muzascript • Roblox Scripter</footer>
 
-<!-- 🔥 FIREBASE + AUTH + CHAT -->
+<!-- 🔥 FIREBASE + AUTH + ADMIN SYSTEM -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore, collection, addDoc,
   query, orderBy, onSnapshot,
-  serverTimestamp
+  serverTimestamp, getDocs, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
   getAuth, signInAnonymously, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-/* ADMIN */
-const ADMINS = ["muzascript","MuzaScript","Muza"];
 
 const firebaseConfig = {
   apiKey: "AIzaSyA0_VKg_GW208z3y4oPnDzkMrF-XW4uqWo",
@@ -132,57 +129,85 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-/* LOGIN ANONYMOUS */
+/* 🔑 GANTI UID INI NANTI */
+const ADMIN_UIDS = [
+  "PASTE_UID_KAMU_DI_SINI"
+];
+
+let myUID = null;
+
+/* LOGIN */
 signInAnonymously(auth);
+
 onAuthStateChanged(auth,user=>{
-  if(user) console.log("✅ Auth UID:",user.uid);
+  if(user){
+    myUID = user.uid;
+    alert("UID kamu:\n" + user.uid);
+    console.log("UID:",user.uid);
+  }
 });
 
-/* CHAT LISTENER */
-const chatBox=document.getElementById("chatBox");
+/* CHAT */
+const chatBox = document.getElementById("chatBox");
+
 onSnapshot(
   query(collection(db,"messages"),orderBy("createdAt","asc")),
   snap=>{
     chatBox.innerHTML="";
-    snap.forEach(doc=>{
-      const d=doc.data();
-      const isAdmin=ADMINS.includes(d.name);
-      const time=d.createdAt
+    snap.forEach(d=>{
+      const m=d.data();
+      const isAdmin = ADMIN_UIDS.includes(m.uid);
+      const time = m.createdAt
         ? new Intl.DateTimeFormat("id-ID",{
             timeZone:"Asia/Jakarta",
             hour:"2-digit",minute:"2-digit",
             day:"2-digit",month:"short",year:"numeric"
-          }).format(d.createdAt.toDate())
+          }).format(m.createdAt.toDate())
         :"";
 
       chatBox.innerHTML+=`
         <div class="msg">
-          <span class="name">${d.name}</span>
+          <span class="name">${m.name}</span>
           ${isAdmin?'<span class="admin">[ADMIN]</span>':""}
           <span class="time"> • ${time} WIB</span><br>
-          ${d.text}
+          ${m.text}
         </div>`;
     });
-    chatBox.scrollTop=chatBox.scrollHeight;
+    chatBox.scrollTop = chatBox.scrollHeight;
   }
 );
 
-/* SEND CHAT */
-window.sendChat=async()=>{
-  const text=chatText.value.trim();
+/* SEND */
+window.sendChat = async()=>{
+  const text = chatText.value.trim();
   if(!text) return;
 
-  const now=Date.now();
-  const last=localStorage.getItem("lastSend")||0;
-  if(now-last<83000)
+  const name = chatName.value.trim() || "Anonymous";
+
+  /* ADMIN COMMAND */
+  if(text.startsWith("?") && ADMIN_UIDS.includes(myUID)){
+    if(text==="?clear"){
+      const snap = await getDocs(collection(db,"messages"));
+      snap.forEach(d=>deleteDoc(d.ref));
+    }
+    chatText.value="";
+    return;
+  }
+
+  const now = Date.now();
+  const last = localStorage.getItem("lastSend") || 0;
+  if(now-last < 83000)
     return alert("⏳ Tunggu 83 detik");
 
-  const name=chatName.value.trim()||"Anonymous";
   localStorage.setItem("lastSend",now);
 
   await addDoc(collection(db,"messages"),{
-    name,text,createdAt:serverTimestamp()
+    uid: myUID,
+    name,
+    text,
+    createdAt: serverTimestamp()
   });
+
   chatText.value="";
 };
 </script>
