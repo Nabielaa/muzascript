@@ -100,7 +100,7 @@ footer{
 </div>
 </main>
 
-<footer>©2026 muzascript • Roblox Scripter / Script Showcaser</footer>
+<footer>©2026 muzascript • Roblox Scripter</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -125,17 +125,16 @@ const db = getFirestore(app);
 const chatBox = document.getElementById("chatBox");
 const settingsRef = doc(db,"settings","global");
 
-/* INIT SETTINGS */
-await setDoc(settingsRef,{
-  locked:false,
-  admins:["muzascript"]
-},{merge:true});
-
-let admins=[], locked=false;
+let admins = [];
+let locked = false;
 
 onSnapshot(settingsRef,s=>{
-  admins=s.data().admins||[];
-  locked=s.data().locked||false;
+  if(!s.exists()){
+    setDoc(settingsRef,{admins:["muzascript"],locked:false});
+    return;
+  }
+  admins = s.data().admins || [];
+  locked = s.data().locked || false;
 });
 
 onSnapshot(
@@ -170,7 +169,7 @@ window.sendChat=async()=>{
   if(!text)return;
 
   if(locked && !admins.includes(name))
-    return alert("🔒 Global chat is locked");
+    return alert("🔒 Global chat dikunci");
 
   if(text.startsWith("?") && admins.includes(name)){
     const [cmd,arg]=text.split(" ");
