@@ -23,9 +23,7 @@ button,a{
 }
 button:hover,a:hover{background:#00cc88}
 
-input,textarea{
-  padding:10px;border-radius:6px;border:none;outline:none
-}
+input,textarea{padding:10px;border-radius:6px;border:none;outline:none}
 textarea{min-height:90px;resize:none}
 
 .chatbox{
@@ -72,7 +70,6 @@ footer{
   <a href="https://tiktok.com/@bluearmy_82" target="_blank">TikTok</a>
   <button onclick="go('send')">📩 Send Message</button>
   <button onclick="go('chat')">💬 Global Chat</button>
-  <button onclick="go('second')">🌐 Second Website</button>
   <button onclick="go('home')">⬅ Back</button>
 </div>
 
@@ -91,36 +88,25 @@ footer{
   <button onclick="go('social')">⬅ Back</button>
 </div>
 
-<div class="page" id="second">
-  <p style="opacity:.7">MuzaScript – Second Website</p>
-  <a href="https://nabielaa.github.io/bratgenerator_muzascript/" target="_blank">
-    Open Brat Generator
-  </a>
-  <button onclick="go('social')">⬅ Back</button>
-</div>
-
 </div>
 </main>
 
 <footer>©2026 muzascript • Roblox Scripter</footer>
 
-<!-- 🔥 FIREBASE + AUTH + ADMIN + LOCK -->
+<!-- 🔥 FIREBASE + AUTH + CHAT -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getFirestore, collection, addDoc,
-  query, orderBy, onSnapshot,
-  serverTimestamp, getDocs, deleteDoc,
+  getFirestore, collection, addDoc, getDocs, deleteDoc,
+  query, orderBy, onSnapshot, serverTimestamp,
   doc, setDoc, updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
   getAuth, signInAnonymously, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* ADMIN UID */
-const ADMIN_UIDS = [
-  "knqUvbDr48UnZ6ulA4gbqSgw8DC2"
-];
+/* 🔑 ADMIN UID */
+const ADMIN_UIDS = ["knqUvbDr48UnZ6ulA4gbqSgw8DC2"];
 
 const firebaseConfig = {
   apiKey: "AIzaSyA0_VKg_GW208z3y4oPnDzkMrF-XW4uqWo",
@@ -143,16 +129,18 @@ signInAnonymously(auth);
 onAuthStateChanged(auth,u=>{
   if(u){
     myUID = u.uid;
-    console.log("ADMIN UID:",myUID);
+    console.log("UID:",myUID);
   }
 });
 
-/* LOCK SETTINGS */
+/* INIT SETTINGS */
 const settingsRef = doc(db,"settings","global");
-await setDoc(settingsRef,{locked:false},{merge:true});
-onSnapshot(settingsRef,s=>{
-  chatLocked = s.data()?.locked ?? false;
-});
+(async()=>{
+  await setDoc(settingsRef,{locked:false},{merge:true});
+  onSnapshot(settingsRef,s=>{
+    chatLocked = s.data()?.locked ?? false;
+  });
+})();
 
 /* CHAT LISTENER */
 const chatBox = document.getElementById("chatBox");
@@ -170,7 +158,6 @@ onSnapshot(
             day:"2-digit",month:"short",year:"numeric"
           }).format(m.createdAt.toDate())
         :"";
-
       chatBox.innerHTML+=`
         <div class="msg">
           <span class="name">${m.name}</span>
@@ -191,10 +178,10 @@ window.sendChat = async()=>{
   const name = chatName.value.trim() || "Anonymous";
   const isAdmin = ADMIN_UIDS.includes(myUID);
 
-  /* COMMAND */
+  /* ADMIN COMMAND */
   if(text.startsWith("?") && isAdmin){
     if(text==="?clear"){
-      const snap = await getDocs(collection(db,"messages"));
+      const snap=await getDocs(collection(db,"messages"));
       snap.forEach(d=>deleteDoc(d.ref));
     }
     if(text==="?lock") await updateDoc(settingsRef,{locked:true});
@@ -220,7 +207,6 @@ window.sendChat = async()=>{
     text,
     createdAt:serverTimestamp()
   });
-
   chatText.value="";
 };
 </script>
@@ -248,7 +234,6 @@ function go(id){
   document.getElementById(id).style.display="flex";
   if(id==="home")startTyping();
 }
-
 const text="Hello! welcome to my website!";
 let i=0;
 function startTyping(){
