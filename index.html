@@ -93,7 +93,7 @@ footer{
 
 <footer>©2026 muzascript • Roblox Scripter</footer>
 
-<!-- 🔥 FIREBASE + AUTH + CHAT -->
+<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
@@ -105,10 +105,8 @@ import {
   getAuth, signInAnonymously, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* 🔑 ADMIN UID */
-const ADMIN_UIDS = [
-  "knqUvbDr48UnZ6ulA4gbqSgw8DC2"
-];
+/* ADMIN UID */
+const ADMIN_UIDS = ["knqUvbDr48UnZ6ulA4gbqSgw8DC2"];
 
 const firebaseConfig = {
   apiKey: "AIzaSyA0_VKg_GW208z3y4oPnDzkMrF-XW4uqWo",
@@ -126,13 +124,12 @@ const auth = getAuth(app);
 let myUID = null;
 let chatLocked = false;
 
-/* 🔐 AUTH + UID NOTIF (SELALU MUNCUL) */
+/* AUTH */
 signInAnonymously(auth);
 onAuthStateChanged(auth,user=>{
   if(user){
     myUID = user.uid;
     alert("🔑 UID KAMU:\n\n" + myUID);
-    console.log("UID:", myUID);
   }
 });
 
@@ -151,8 +148,8 @@ onSnapshot(
     chatBox.innerHTML="";
     snap.forEach(d=>{
       const m=d.data();
-      const isAdmin = ADMIN_UIDS.includes(m.uid);
-      const time = m.createdAt
+      const isAdmin=ADMIN_UIDS.includes(m.uid);
+      const time=m.createdAt
         ? new Intl.DateTimeFormat("id-ID",{
             timeZone:"Asia/Jakarta",
             hour:"2-digit",minute:"2-digit",
@@ -173,13 +170,16 @@ onSnapshot(
 
 /* SEND CHAT */
 window.sendChat=async()=>{
+  if(!myUID) return alert("⏳ Tunggu auth siap...");
+
   const text=chatText.value.trim();
   if(!text)return;
 
   const name=chatName.value.trim()||"Anonymous";
   const isAdmin=ADMIN_UIDS.includes(myUID);
 
-  if(text.startsWith("?") && isAdmin){
+  /* COMMAND */
+  if(isAdmin && text.startsWith("?")){
     if(text==="?clear"){
       const snap=await getDocs(collection(db,"messages"));
       snap.forEach(d=>deleteDoc(d.ref));
@@ -206,25 +206,9 @@ window.sendChat=async()=>{
     name,text,
     createdAt:serverTimestamp()
   });
+
   chatText.value="";
 };
-</script>
-
-<!-- DISCORD -->
-<script>
-const WEBHOOK_URL="https://discord.com/api/webhooks/1463512329890173086/1vep4y4yMj5FOJA_LGD08UkdklYRggkkBYnMbJ85Mi02qSxuu7M8d5PXNj6XRFOpJSiA";
-function sendToDiscord(){
-  if(!dmText.value)return;
-  fetch(WEBHOOK_URL,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      content:`📩 ${dmName.value||"Anonymous"}\n\n${dmText.value}`
-    })
-  });
-  dmText.value="";
-  alert("Message sent!");
-}
 </script>
 
 <script>
