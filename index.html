@@ -106,7 +106,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 /* 🔑 ADMIN UID */
-const ADMIN_UIDS = ["knqUvbDr48UnZ6ulA4gbqSgw8DC2"];
+const ADMIN_UIDS = [
+  "knqUvbDr48UnZ6ulA4gbqSgw8DC2"
+];
 
 const firebaseConfig = {
   apiKey: "AIzaSyA0_VKg_GW208z3y4oPnDzkMrF-XW4uqWo",
@@ -124,26 +126,25 @@ const auth = getAuth(app);
 let myUID = null;
 let chatLocked = false;
 
-/* AUTH */
+/* 🔐 AUTH + UID NOTIF (SELALU MUNCUL) */
 signInAnonymously(auth);
-onAuthStateChanged(auth,u=>{
-  if(u){
-    myUID = u.uid;
-    console.log("UID:",myUID);
+onAuthStateChanged(auth,user=>{
+  if(user){
+    myUID = user.uid;
+    alert("🔑 UID KAMU:\n\n" + myUID);
+    console.log("UID:", myUID);
   }
 });
 
-/* INIT SETTINGS */
+/* SETTINGS */
 const settingsRef = doc(db,"settings","global");
-(async()=>{
-  await setDoc(settingsRef,{locked:false},{merge:true});
-  onSnapshot(settingsRef,s=>{
-    chatLocked = s.data()?.locked ?? false;
-  });
-})();
+await setDoc(settingsRef,{locked:false},{merge:true});
+onSnapshot(settingsRef,s=>{
+  chatLocked = s.data()?.locked ?? false;
+});
 
 /* CHAT LISTENER */
-const chatBox = document.getElementById("chatBox");
+const chatBox=document.getElementById("chatBox");
 onSnapshot(
   query(collection(db,"messages"),orderBy("createdAt","asc")),
   snap=>{
@@ -166,19 +167,18 @@ onSnapshot(
           ${m.text}
         </div>`;
     });
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.scrollTop=chatBox.scrollHeight;
   }
 );
 
 /* SEND CHAT */
-window.sendChat = async()=>{
-  const text = chatText.value.trim();
-  if(!text) return;
+window.sendChat=async()=>{
+  const text=chatText.value.trim();
+  if(!text)return;
 
-  const name = chatName.value.trim() || "Anonymous";
-  const isAdmin = ADMIN_UIDS.includes(myUID);
+  const name=chatName.value.trim()||"Anonymous";
+  const isAdmin=ADMIN_UIDS.includes(myUID);
 
-  /* ADMIN COMMAND */
   if(text.startsWith("?") && isAdmin){
     if(text==="?clear"){
       const snap=await getDocs(collection(db,"messages"));
@@ -203,8 +203,7 @@ window.sendChat = async()=>{
 
   await addDoc(collection(db,"messages"),{
     uid:myUID,
-    name,
-    text,
+    name,text,
     createdAt:serverTimestamp()
   });
   chatText.value="";
